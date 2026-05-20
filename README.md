@@ -5,7 +5,7 @@ digital-first company, they have decided to build a webshop before opening a
 physical store. They have hired you to build the webshop for them.
 
 ## The goal
-Today you're pairing with someone with someone else to build features for the
+Today you're pairing with someone else to build features for the
 webshop. The goal isn't to finish all of the features listed below, but to
 emphasise quality and communication. Talk through your thought process, ask
 questions, outline trade-offs.
