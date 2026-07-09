@@ -38,8 +38,13 @@ func main() {
 	petFixtures[0].SetRegion("Europe")
 	petFixtures[1].SetRegion("North America")
 
-	petshop := usecases.NewPetshop(configuredPrinter(), petFixtures...)
-	petshop.PrintPets()
+	petshop := usecases.NewPetshop(petFixtures...)
+	petshopPrinter := adapters.PetshopPrinter{
+		Petshop: petshop,
+		Printer: configuredPrinter(),
+	}
+
+	petshopPrinter.PrintPets()
 }
 
 func configure() error {

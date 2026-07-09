@@ -4,33 +4,30 @@ import (
 	"github.com/atoscerebro/eviden-petshop/internal/entities"
 )
 
-type Petshop interface {
-	ListPets() []entities.Pet
-	AddPet(entities.Pet) error
-}
+// TODO: Refactor Petshop, since we don't need an interface to meet the functions.
+// Use an adapter pattern to wire up the Petshop + Printer. To comply with Single-responsibilty principle.
 
-type PetShopWithPrinter struct {
+// type Petshop interface {
+// 	ListPets() []entities.Pet
+// 	AddPet(entities.Pet) error
+// }
+
+type Petshop struct {
 	pets []entities.Pet
-	Printer
 }
 
 // NewPetshop creates a new instance of PetShop
-func NewPetshop(printer Printer, pets ...entities.Pet) *PetShopWithPrinter {
-	return &PetShopWithPrinter{
-		pets:    pets,
-		Printer: printer,
+func NewPetshop(pets ...entities.Pet) *Petshop {
+	return &Petshop{
+		pets: pets,
 	}
 }
 
-func (shop *PetShopWithPrinter) ListPets() []entities.Pet {
+func (shop *Petshop) ListPets() []entities.Pet {
 	return shop.pets
 }
 
-func (shop *PetShopWithPrinter) AddPet(pet entities.Pet) error {
+func (shop *Petshop) AddPet(pet entities.Pet) error {
 	shop.pets = append(shop.pets, pet)
 	return nil
-}
-
-func (shop *PetShopWithPrinter) PrintPets() {
-	shop.Print(shop.pets)
 }
