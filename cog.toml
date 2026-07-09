@@ -1,0 +1,42 @@
+from_latest_tag = true
+ignore_merge_commits = true
+ignore_fixup_commits = true
+disable_changelog = false
+disable_bump_commit = false
+tag_prefix = "v"
+skip_ci = "[skip ci]"
+skip_untracked = false
+pre_bump_hooks = ["make pre-push"]
+post_bump_hooks = []
+
+[git_hooks.commit-msg]
+script = """#!/bin/sh
+set -eu
+
+if ! command -v cog >/dev/null 2>&1; then
+  echo "cog is required for commit message validation. Enter nix-shell or install cocogitto." >&2
+  exit 127
+fi
+
+cog verify --file "$1" --ignore-merge-commits --ignore-fixup-commits
+"""
+
+[git_hooks.pre-commit]
+script = """#!/bin/sh
+set -eu
+
+make pre-commit
+"""
+
+[git_hooks.pre-push]
+script = """#!/bin/sh
+set -eu
+
+make pre-push
+"""
+
+[changelog]
+path = "CHANGELOG.md"
+authors = []
+
+[bump_profiles]

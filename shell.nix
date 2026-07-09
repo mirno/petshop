@@ -18,6 +18,7 @@ pkgs.mkShell {
     goreleaser
     golangci-lint
     oapi-codegen
+    cocogitto
   ];
 
   shellHook = ''
