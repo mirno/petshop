@@ -18,7 +18,16 @@ pkgs.mkShell {
     goreleaser
     golangci-lint
     oapi-codegen
+
+    # Linters
     cocogitto
+    editorconfig-checker
+    hadolint
+    checkmake
+    yamllint
+    shellcheck
+    trivy
+    gitleaks
   ];
 
   shellHook = ''
