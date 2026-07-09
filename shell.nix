@@ -17,6 +17,7 @@ pkgs.mkShell {
     plantuml
     goreleaser
     golangci-lint
+    oapi-codegen
   ];
 
   shellHook = ''

@@ -1,4 +1,4 @@
-.PHONY: build lint
+.PHONY: build lint generate
 
 build: bin/petshop
 
@@ -7,3 +7,6 @@ bin/petshop: go.sum
 
 lint:
 	golangci-lint run ./...
+
+generate:
+	go generate ./...

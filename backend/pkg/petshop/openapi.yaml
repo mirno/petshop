@@ -1,0 +1,293 @@
+openapi: 3.0.3
+info:
+  title: Eviden Petshop API
+  version: 0.1.0
+  description: REST API for listing, creating, retrieving, and updating pets in the Eviden Petshop.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Pets
+    description: Petshop inventory operations
+paths:
+  /pets:
+    get:
+      tags:
+        - Pets
+      operationId: listPets
+      summary: List pets
+      description: Returns all pets available in the petshop inventory.
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Filter pets by animal type.
+          schema:
+            $ref: "#/components/schemas/AnimalType"
+        - name: region
+          in: query
+          required: false
+          description: Filter pets by metadata region.
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Pets returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pet"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      tags:
+        - Pets
+      operationId: createPet
+      summary: Create a pet
+      description: Adds a new pet to the petshop inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePetRequest"
+      responses:
+        "201":
+          description: Pet created successfully.
+          headers:
+            Location:
+              description: URL of the created pet.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        default:
+          $ref: "#/components/responses/Error"
+  /pets/{petId}:
+    parameters:
+      - $ref: "#/components/parameters/PetId"
+    get:
+      tags:
+        - Pets
+      operationId: getPet
+      summary: Get a pet
+      description: Returns details for a single pet.
+      responses:
+        "200":
+          description: Pet returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Error"
+    put:
+      tags:
+        - Pets
+      operationId: updatePet
+      summary: Update a pet
+      description: Replaces an existing pet in the petshop inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePetRequest"
+      responses:
+        "200":
+          description: Pet updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Error"
+    patch:
+      tags:
+        - Pets
+      operationId: patchPet
+      summary: Partially update a pet
+      description: Updates one or more fields on an existing pet.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchPetRequest"
+      responses:
+        "200":
+          description: Pet updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Error"
+components:
+  parameters:
+    PetId:
+      name: petId
+      in: path
+      required: true
+      description: Unique pet identifier.
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: The request is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: The requested pet was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Error:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    AnimalType:
+      type: string
+      enum:
+        - dog
+        - snake
+      example: dog
+    PetStatus:
+      type: string
+      description: Current inventory status for the pet.
+      enum:
+        - available
+        - reserved
+        - sold
+      default: available
+      example: available
+    Metadata:
+      type: object
+      description: Additional pet metadata used by presentation and inventory rules.
+      additionalProperties:
+        type: string
+      properties:
+        Region:
+          type: string
+          description: Region where the pet is available.
+          example: Europe
+      example:
+        Region: Europe
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - price
+        - metadata
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 00000000-0000-0000-0000-000000000001
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Rex
+        type:
+          $ref: "#/components/schemas/AnimalType"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          multipleOf: 0.01
+          example: 80.00
+        status:
+          $ref: "#/components/schemas/PetStatus"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    CreatePetRequest:
+      type: object
+      required:
+        - name
+        - type
+        - price
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Rex
+        type:
+          $ref: "#/components/schemas/AnimalType"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          multipleOf: 0.01
+          example: 80.00
+        status:
+          $ref: "#/components/schemas/PetStatus"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    UpdatePetRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreatePetRequest"
+    PatchPetRequest:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Rex
+        type:
+          $ref: "#/components/schemas/AnimalType"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          multipleOf: 0.01
+          example: 80.00
+        status:
+          $ref: "#/components/schemas/PetStatus"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          example: pet_not_found
+        message:
+          type: string
+          example: Pet was not found.
