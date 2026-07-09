@@ -1,0 +1,18 @@
+@startuml petshop
+Title petshop
+package entities {
+    struct Pet {
+        +UUID
+        +Name
+        +Type
+        +Price
+    }
+}
+package usecases {
+    interface Petshop {
+        - List()
+        - GetPet(name) Pet
+    }
+}
+
+@enduml
