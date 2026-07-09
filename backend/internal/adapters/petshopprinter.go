@@ -1,6 +1,6 @@
 package adapters
 
-import "github.com/atoscerebro/eviden-petshop/internal/usecases"
+import "github.com/mirno/petshop/internal/usecases"
 
 // Petshop pinters decorates the Pethop with a printer mechanism, using dependency injection.
 type PetshopPrinter struct {

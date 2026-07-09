@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"github.com/atoscerebro/eviden-petshop/internal/entities"
+	"github.com/mirno/petshop/internal/entities"
 )
 
 // TODO: Refactor Petshop, since we don't need an interface to meet the functions.

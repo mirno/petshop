@@ -1,6 +1,6 @@
 package usecases
 
-import "github.com/atoscerebro/eviden-petshop/internal/entities"
+import "github.com/mirno/petshop/internal/entities"
 
 // TODO: Use []bytes
 type Printer interface {

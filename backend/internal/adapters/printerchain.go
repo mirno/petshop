@@ -1,8 +1,8 @@
 package adapters
 
 import (
-	"github.com/atoscerebro/eviden-petshop/internal/entities"
-	"github.com/atoscerebro/eviden-petshop/internal/usecases"
+	"github.com/mirno/petshop/internal/entities"
+	"github.com/mirno/petshop/internal/usecases"
 )
 
 var _ usecases.Printer = (*PrinterChain)(nil)

@@ -3,7 +3,7 @@ package printer
 import (
 	"testing"
 
-	"github.com/atoscerebro/eviden-petshop/internal/entities"
+	"github.com/mirno/petshop/internal/entities"
 )
 
 func TestConsolePrinterFormatsPriceAndMetadata(t *testing.T) {

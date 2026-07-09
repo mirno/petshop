@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/atoscerebro/eviden-petshop/internal/adapters"
-	"github.com/atoscerebro/eviden-petshop/internal/drivers/printer"
-	"github.com/atoscerebro/eviden-petshop/internal/testdata"
-	"github.com/atoscerebro/eviden-petshop/internal/usecases"
+	"github.com/mirno/petshop/internal/adapters"
+	"github.com/mirno/petshop/internal/drivers/printer"
+	"github.com/mirno/petshop/internal/testdata"
+	"github.com/mirno/petshop/internal/usecases"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )

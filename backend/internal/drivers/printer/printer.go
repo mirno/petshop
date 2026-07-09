@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/atoscerebro/eviden-petshop/internal/entities"
+	"github.com/mirno/petshop/internal/entities"
 )
 
 type ConsolePrinter struct {
