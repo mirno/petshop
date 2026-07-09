@@ -19,11 +19,10 @@ var (
 
 func main() {
 	// printer := printer.JSONPrinter{Path: "pets.json"}
-	printer := printer.ConsolePrinter{}
-	petshop := usecases.NewPetshop(&printer, petFixtures...)
+	consolePrinter := printer.NewConsolePrinter(printer.WithMetadata())
+	petFixtures[0].SetRegion("Europe")
+	petFixtures[1].SetRegion("North America")
 
+	petshop := usecases.NewPetshop(consolePrinter, petFixtures...)
 	petshop.PrintPets()
-
-	pets := petshop.ListPets()
-	pets[0].PrintPrice()
 }
