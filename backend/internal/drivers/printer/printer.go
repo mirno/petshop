@@ -81,5 +81,8 @@ func (p *JSONPrinter) Print(pets []entities.Pet) {
 		os.Exit(1)
 	}
 
-	file.Write(jsonData)
+	_, err = file.Write(jsonData)
+	if err != nil {
+		os.Exit(1)
+	}
 }

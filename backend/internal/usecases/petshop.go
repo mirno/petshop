@@ -32,5 +32,5 @@ func (shop *PetShopWithPrinter) AddPet(pet entities.Pet) error {
 }
 
 func (shop *PetShopWithPrinter) PrintPets() {
-	shop.Printer.Print(shop.pets)
+	shop.Print(shop.pets)
 }
