@@ -7,9 +7,8 @@ import (
 
 	"github.com/atoscerebro/eviden-petshop/internal/adapters"
 	"github.com/atoscerebro/eviden-petshop/internal/drivers/printer"
-	"github.com/atoscerebro/eviden-petshop/internal/entities"
+	"github.com/atoscerebro/eviden-petshop/internal/testdata"
 	"github.com/atoscerebro/eviden-petshop/internal/usecases"
-	"github.com/google/uuid"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -19,21 +18,13 @@ const (
 	jsonOutputConfigKey = "json-output"
 )
 
-var (
-	idRex       = uuid.MustParse("00000000-0000-0000-0000-000000000001")
-	idSlytherin = uuid.MustParse("00000000-0000-0000-0000-000000000002")
-
-	petFixtures = []entities.Pet{
-		{ID: idRex, Name: "Rex", Type: entities.Dog, Price: 80},
-		{ID: idSlytherin, Name: "Slytherin", Type: entities.Snake, Price: 400},
-	}
-)
-
 func main() {
 	if err := configure(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	petFixtures := testdata.PetFixtures
 
 	petFixtures[0].SetRegion("Europe")
 	petFixtures[1].SetRegion("North America")
