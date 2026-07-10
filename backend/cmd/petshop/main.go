@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mirno/petshop/internal/adapters"
+	"github.com/mirno/petshop/internal/drivers/inmemorykvstore"
 	"github.com/mirno/petshop/internal/drivers/printer"
 	"github.com/mirno/petshop/internal/entities"
 	"github.com/mirno/petshop/internal/testdata"
@@ -74,7 +75,8 @@ func (runner *commandRunner) preRun(_ *cobra.Command, _ []string) error {
 }
 
 func (runner *commandRunner) run(cmd *cobra.Command, _ []string) error {
-	petshop := usecases.NewPetshop(petFixtures()...)
+	store := inmemorykvstore.NewInMemoryKVStore[entities.Pet]()
+	petshop := usecases.NewPetshop(store, petFixtures()...)
 	petshopPrinter := adapters.PetshopPrinter{
 		Petshop: petshop,
 		Printer: configuredPrinter(runner.config, cmd),
