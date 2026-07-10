@@ -3,6 +3,7 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -12,12 +13,15 @@ import (
 
 type ConsolePrinter struct {
 	withMetadata bool
+	writer       io.Writer
 }
 
 type Option func(*ConsolePrinter)
 
 func NewConsolePrinter(options ...Option) *ConsolePrinter {
-	printer := &ConsolePrinter{}
+	printer := &ConsolePrinter{
+		writer: os.Stdout,
+	}
 
 	for _, option := range options {
 		option(printer)
@@ -32,9 +36,15 @@ func WithMetadata() Option {
 	}
 }
 
+func WithWriter(writer io.Writer) Option {
+	return func(printer *ConsolePrinter) {
+		printer.writer = writer
+	}
+}
+
 func (p *ConsolePrinter) Print(pets []entities.Pet) {
 	for _, pet := range pets {
-		fmt.Println(p.formatPet(pet))
+		fmt.Fprintln(p.writer, p.formatPet(pet)) //nolint: errcheck // skipping since I plan to deprecate the Printer in the future.
 	}
 }
 
