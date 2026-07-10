@@ -1,4 +1,4 @@
-.PHONY: build lint generate
+.PHONY: build lint generate test
 
 build: bin/petshop
 
@@ -10,3 +10,6 @@ lint:
 
 generate:
 	go generate ./...
+
+test:
+	go test -covermode atomic -race ./...

@@ -13,7 +13,7 @@ lint:
 	$(MAKE) -C backend lint
 
 test:
-	cd backend && go test ./...
+	$(MAKE) -C backend test
 
 pre-commit: generate lint
 
