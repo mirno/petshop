@@ -16,6 +16,7 @@ import (
 const (
 	detailsConfigKey    = "details"
 	jsonOutputConfigKey = "json-output"
+	metadataFieldName   = "Region"
 )
 
 func main() {
@@ -26,8 +27,8 @@ func main() {
 
 	petFixtures := testdata.PetFixtures
 
-	petFixtures[0].SetRegion("Europe")
-	petFixtures[1].SetRegion("North America")
+	petFixtures[0].Metadata.Set(metadataFieldName, "Europe")
+	petFixtures[1].Metadata.Set(metadataFieldName, "North America")
 
 	petshop := usecases.NewPetshop(petFixtures...)
 	petshopPrinter := adapters.PetshopPrinter{

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/mirno/petshop/internal/entities"
+	"github.com/mirno/petshop/pkg/petshop"
 )
 
 func TestConsolePrinterFormatsPriceAndMetadata(t *testing.T) {
@@ -12,8 +13,8 @@ func TestConsolePrinterFormatsPriceAndMetadata(t *testing.T) {
 		Name:  "Rex",
 		Type:  entities.Dog,
 		Price: 80,
-		Metadata: entities.Metadata{
-			"Region": "Europe",
+		Metadata: petshop.Metadata{
+			AdditionalProperties: map[string]string{"Region": "Europe"},
 		},
 	}
 
@@ -31,8 +32,8 @@ func TestConsolePrinterOmitsMetadataByDefault(t *testing.T) {
 		Name:  "Rex",
 		Type:  entities.Dog,
 		Price: 80,
-		Metadata: entities.Metadata{
-			"Region": "Europe",
+		Metadata: petshop.Metadata{
+			AdditionalProperties: map[string]string{"Region": "Europe"},
 		},
 	}
 

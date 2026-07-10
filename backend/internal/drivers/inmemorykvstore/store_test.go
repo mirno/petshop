@@ -33,7 +33,7 @@ func TestStoreSupportsPetEntityGeneric(t *testing.T) {
 	store := inmemorykvstore.NewInMemoryKVStore[entities.Pet]()
 
 	want := testdata.PetRex
-	want.SetRegion("Europe")
+	want.Metadata.Set("Region", "Europe")
 
 	err := store.Save(want.Name, want)
 	require.NoError(t, err)

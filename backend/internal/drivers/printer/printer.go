@@ -40,11 +40,11 @@ func (p *ConsolePrinter) Print(pets []entities.Pet) {
 
 func (p *ConsolePrinter) formatPet(pet entities.Pet) string {
 	line := fmt.Sprintf("%s (%s): %.2f", pet.Name, pet.Type, float64(pet.Price))
-	if !p.withMetadata || len(pet.Metadata) == 0 {
+	if !p.withMetadata || len(pet.Metadata.AdditionalProperties) == 0 {
 		return line
 	}
 
-	return fmt.Sprintf("%s [%s]", line, formatMetadata(pet.Metadata))
+	return fmt.Sprintf("%s [%s]", line, formatMetadata(pet.Metadata.AdditionalProperties))
 }
 
 func formatMetadata(metadata entities.Metadata) string {
