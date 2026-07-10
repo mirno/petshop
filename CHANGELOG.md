@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.0 - 2026-07-10
+#### Features
+- implement handlers - (4cee8ae) - Mirno Hoogendonk
+#### Continuous Integration
+- improve make test syntax - (b9cd61d) - Mirno Hoogendonk
+- add linters (nix) - (18f5919) - Mirno Hoogendonk
+#### Refactoring
+- (**cli**) migrate petshop command to cobra - (321f092) - Mirno Hoogendonk
+- Alias [Pet] entities to generated code (petshop) - (8bb307a) - Mirno Hoogendonk
+#### Miscellaneous Chores
+- (**printer**) Implement io.Writer interface - (ca6b003) - Mirno Hoogendonk
+
+- - -
+
 ## v0.1.0 - 2026-07-09
 #### Features
 - Implement KV store using generics - (2120faf) - Mirno Hoogendonk
