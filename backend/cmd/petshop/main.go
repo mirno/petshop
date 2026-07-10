@@ -7,9 +7,10 @@ import (
 
 	"github.com/mirno/petshop/internal/adapters"
 	"github.com/mirno/petshop/internal/drivers/printer"
+	"github.com/mirno/petshop/internal/entities"
 	"github.com/mirno/petshop/internal/testdata"
 	"github.com/mirno/petshop/internal/usecases"
-	"github.com/spf13/pflag"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -17,52 +18,112 @@ const (
 	detailsConfigKey    = "details"
 	jsonOutputConfigKey = "json-output"
 	metadataFieldName   = "Region"
+	envPrefix           = "PETSHOP"
 )
 
+type Config struct {
+	Details    bool
+	JSONOutput string
+}
+
+type commandRunner struct {
+	settings *viper.Viper
+	config   Config
+}
+
 func main() {
-	if err := configure(); err != nil {
+	cmd, err := command()
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	petFixtures := testdata.PetFixtures
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
 
-	petFixtures[0].Metadata.Set(metadataFieldName, "Europe")
-	petFixtures[1].Metadata.Set(metadataFieldName, "North America")
+func command() (*cobra.Command, error) {
+	runner := &commandRunner{}
 
-	petshop := usecases.NewPetshop(petFixtures...)
+	cmd := &cobra.Command{
+		Use:          "petshop",
+		Short:        "Print the petshop inventory",
+		Args:         cobra.NoArgs,
+		SilenceUsage: true,
+		PreRunE:      runner.preRun,
+		RunE:         runner.run,
+		PostRunE:     runner.postRun,
+	}
+
+	setupFlags(cmd)
+
+	settings, err := setupViper(cmd)
+	if err != nil {
+		return nil, err
+	}
+	runner.settings = settings
+
+	return cmd, nil
+}
+
+func (runner *commandRunner) preRun(_ *cobra.Command, _ []string) error {
+	runner.config = getConfig(runner.settings)
+	return nil
+}
+
+func (runner *commandRunner) run(cmd *cobra.Command, _ []string) error {
+	petshop := usecases.NewPetshop(petFixtures()...)
 	petshopPrinter := adapters.PetshopPrinter{
 		Petshop: petshop,
-		Printer: configuredPrinter(),
+		Printer: configuredPrinter(runner.config, cmd),
 	}
 
 	petshopPrinter.PrintPets()
-}
-
-func configure() error {
-	pflag.Bool(detailsConfigKey, false, "display pet metadata")
-	pflag.String(jsonOutputConfigKey, "", "write pets to a JSON file")
-	pflag.Parse()
-
-	viper.SetEnvPrefix("PETSHOP")
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	viper.AutomaticEnv()
-	viper.SetDefault(detailsConfigKey, false)
-	viper.SetDefault(jsonOutputConfigKey, "")
-
-	if err := viper.BindPFlag(detailsConfigKey, pflag.Lookup(detailsConfigKey)); err != nil {
-		return fmt.Errorf("bind %s flag: %w", detailsConfigKey, err)
-	}
-	if err := viper.BindPFlag(jsonOutputConfigKey, pflag.Lookup(jsonOutputConfigKey)); err != nil {
-		return fmt.Errorf("bind %s flag: %w", jsonOutputConfigKey, err)
-	}
 
 	return nil
 }
 
-func configuredPrinter() usecases.Printer {
-	options := make([]printer.Option, 0, 1)
-	if viper.GetBool(detailsConfigKey) {
+func (runner *commandRunner) postRun(_ *cobra.Command, _ []string) error {
+	return nil
+}
+
+func setupFlags(cmd *cobra.Command) {
+	cmd.Flags().Bool(detailsConfigKey, false, "display pet metadata")
+	cmd.Flags().String(jsonOutputConfigKey, "", "write pets to a JSON file")
+}
+
+func setupViper(cmd *cobra.Command) (*viper.Viper, error) {
+	config := viper.New()
+	config.SetEnvPrefix(envPrefix)
+	config.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	config.AutomaticEnv()
+	config.SetDefault(detailsConfigKey, false)
+	config.SetDefault(jsonOutputConfigKey, "")
+
+	if err := config.BindPFlag(detailsConfigKey, cmd.Flags().Lookup(detailsConfigKey)); err != nil {
+		return nil, fmt.Errorf("bind %s flag: %w", detailsConfigKey, err)
+	}
+	if err := config.BindPFlag(jsonOutputConfigKey, cmd.Flags().Lookup(jsonOutputConfigKey)); err != nil {
+		return nil, fmt.Errorf("bind %s flag: %w", jsonOutputConfigKey, err)
+	}
+
+	return config, nil
+}
+
+func getConfig(config *viper.Viper) Config {
+	return Config{
+		Details:    config.GetBool(detailsConfigKey),
+		JSONOutput: config.GetString(jsonOutputConfigKey),
+	}
+}
+
+func configuredPrinter(config Config, cmd *cobra.Command) usecases.Printer {
+	options := []printer.Option{
+		printer.WithWriter(cmd.OutOrStdout()),
+	}
+	if config.Details {
 		options = append(options, printer.WithMetadata())
 	}
 
@@ -70,9 +131,19 @@ func configuredPrinter() usecases.Printer {
 		printer.NewConsolePrinter(options...),
 	}
 
-	if path := viper.GetString(jsonOutputConfigKey); path != "" {
-		printers = append(printers, &printer.JSONPrinter{Path: path})
+	if config.JSONOutput != "" {
+		printers = append(printers, &printer.JSONPrinter{Path: config.JSONOutput})
 	}
 
 	return adapters.NewPrinterChain(printers...)
+}
+
+func petFixtures() []entities.Pet {
+	pets := make([]entities.Pet, len(testdata.PetFixtures))
+	copy(pets, testdata.PetFixtures)
+
+	pets[0].Metadata.Set(metadataFieldName, "Europe")
+	pets[1].Metadata.Set(metadataFieldName, "North America")
+
+	return pets
 }
